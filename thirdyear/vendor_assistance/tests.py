@@ -42,7 +42,8 @@ class VendorAssistanceModelTest(TestCase):
             status=VendorAssistance.ONGOING
         )
         
-        expected = f"XYZ Corp - Network connectivity issues with the payment ter ({VendorAssistance.ONGOING})"
+        # Model __str__ returns first 50 chars of problem_reported, which is 'Network connectivity issues with the payment termi'
+        expected = f"XYZ Corp - Network connectivity issues with the payment termi ({VendorAssistance.ONGOING})"
         self.assertEqual(str(record), expected)
         
     def test_status_choices(self):
@@ -239,7 +240,8 @@ class VendorAssistanceViewTest(TestCase):
         """Test that staff cannot edit records from other staff members"""
         self.client.login(username='staff', password='staff123')
         response = self.client.get(reverse('vendor_assistance:update', args=[self.other_record.pk]))
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])
 
 
 class VendorAssistancePermissionTest(TestCase):
@@ -269,4 +271,5 @@ class VendorAssistancePermissionTest(TestCase):
         """Test that users cannot view detail of other users' records"""
         self.client.login(username='user2', password='pass123')
         response = self.client.get(reverse('vendor_assistance:detail', args=[self.record1.pk]))
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])

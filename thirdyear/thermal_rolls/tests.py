@@ -225,7 +225,8 @@ class ThermalRollRecordViewTest(TestCase):
         """Test that staff cannot edit records from other staff members"""
         self.client.login(username='staff', password='staff123')
         response = self.client.get(reverse('thermal_rolls:update', args=[self.other_record.pk]))
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])
 
 
 class ThermalRollRecordPermissionTest(TestCase):
@@ -255,4 +256,5 @@ class ThermalRollRecordPermissionTest(TestCase):
         """Test that users cannot view detail of other users' records"""
         self.client.login(username='user2', password='pass123')
         response = self.client.get(reverse('thermal_rolls:detail', args=[self.record1.pk]))
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])

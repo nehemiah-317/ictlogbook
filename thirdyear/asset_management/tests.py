@@ -195,7 +195,7 @@ class AssetRecordViewTest(TestCase):
         response = self.client.get(reverse('asset_management:list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['records']), 1)
-        self.assertEqual(response.context['records']['records'][0], self.staff_record)
+        self.assertEqual(response.context['records'][0], self.staff_record)
         
     def test_create_view_get(self):
         """Test GET request to create view"""
@@ -263,8 +263,8 @@ class AssetRecordViewTest(TestCase):
         """Test that staff cannot edit records from other staff members"""
         self.client.login(username='staff', password='staff123')
         response = self.client.get(reverse('asset_management:update', args=[self.other_record.id]))
-        # Should redirect or return 403
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])
 
 
 class AssetRecordPermissionTest(TestCase):
@@ -296,5 +296,5 @@ class AssetRecordPermissionTest(TestCase):
         """Test that users cannot view detail of other users' records"""
         self.client.login(username='user2', password='pass123')
         response = self.client.get(reverse('asset_management:detail', args=[self.record1.id]))
-        # Should redirect or return 403
-        self.assertIn(response.status_code, [302, 403])
+        # Should return 404 (record not in filtered queryset) or 403 (permission denied)
+        self.assertIn(response.status_code, [302, 403, 404])
