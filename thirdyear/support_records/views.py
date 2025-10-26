@@ -43,6 +43,7 @@ def support_record_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'records': records,  # For compatibility with templates
         'page_obj': page_obj,
         'search_query': search_query,
         'status_filter': status_filter,
@@ -123,7 +124,9 @@ def support_record_update(request, pk):
 @login_required
 def support_record_delete(request, pk):
     """Delete a support record (Admin only)"""
-    if not user_is_admin(request.user):
+    is_admin = user_is_admin(request.user)
+    
+    if not is_admin:
         messages.error(request, 'You do not have permission to delete records.')
         return redirect('support_records:list')
     
@@ -136,6 +139,7 @@ def support_record_delete(request, pk):
     
     context = {
         'record': record,
+        'is_admin': is_admin,
     }
-    return render(request, 'support_records/delete_confirm.html', context)
+    return render(request, 'support_records/delete.html', context)
 

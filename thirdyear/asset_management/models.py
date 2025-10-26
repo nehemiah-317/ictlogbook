@@ -6,10 +6,15 @@ from django.utils import timezone
 class AssetRecord(models.Model):
     """Model for tracking physical asset collection or handling"""
     
+    # Status constants
+    IN_USE = 'IN_USE'
+    RETURNED = 'RETURNED'
+    UNDER_REPAIR = 'UNDER_REPAIR'
+    
     STATUS_CHOICES = [
-        ('IN_USE', 'In Use'),
-        ('RETURNED', 'Returned'),
-        ('UNDER_REPAIR', 'Under Repair'),
+        (IN_USE, 'In Use'),
+        (RETURNED, 'Returned'),
+        (UNDER_REPAIR, 'Under Repair'),
     ]
     
     staff_name = models.CharField(max_length=200, help_text="Person collecting/handling the asset")
@@ -26,7 +31,7 @@ class AssetRecord(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='IN_USE',
+        default=IN_USE,
         help_text="Current status of the asset"
     )
     recorded_by = models.ForeignKey(
@@ -55,7 +60,7 @@ class AssetRecord(models.Model):
     
     def save(self, *args, **kwargs):
         # Auto-set returned_at when status changes to RETURNED
-        if self.status == 'RETURNED' and not self.returned_at:
+        if self.status == self.RETURNED and not self.returned_at:
             self.returned_at = timezone.now()
         super().save(*args, **kwargs)
 

@@ -6,10 +6,15 @@ from django.utils import timezone
 class SupportRecord(models.Model):
     """Model for ICT support records provided to staff"""
     
+    # Status constants
+    PENDING = 'PENDING'
+    IN_PROGRESS = 'IN_PROGRESS'
+    SOLVED = 'SOLVED'
+    
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('IN_PROGRESS', 'In Progress'),
-        ('SOLVED', 'Solved'),
+        (PENDING, 'Pending'),
+        (IN_PROGRESS, 'In Progress'),
+        (SOLVED, 'Solved'),
     ]
     
     staff_name = models.CharField(max_length=200, help_text="Name of the staff assisted")
@@ -19,7 +24,7 @@ class SupportRecord(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='PENDING',
+        default=PENDING,
         help_text="Current status of the issue"
     )
     recorded_by = models.ForeignKey(
@@ -47,7 +52,7 @@ class SupportRecord(models.Model):
     
     def save(self, *args, **kwargs):
         # Auto-set resolved_at when status changes to SOLVED
-        if self.status == 'SOLVED' and not self.resolved_at:
+        if self.status == self.SOLVED and not self.resolved_at:
             self.resolved_at = timezone.now()
         super().save(*args, **kwargs)
 

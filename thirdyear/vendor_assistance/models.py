@@ -6,10 +6,15 @@ from django.utils import timezone
 class VendorAssistance(models.Model):
     """Model for recording technical support provided to external vendors"""
     
+    # Status constants
+    PENDING = 'PENDING'
+    ONGOING = 'ONGOING'
+    RESOLVED = 'RESOLVED'
+    
     STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('ONGOING', 'Ongoing'),
-        ('RESOLVED', 'Resolved'),
+        (PENDING, 'Pending'),
+        (ONGOING, 'Ongoing'),
+        (RESOLVED, 'Resolved'),
     ]
     
     company_name = models.CharField(max_length=200, help_text="Company or vendor name")
@@ -19,7 +24,7 @@ class VendorAssistance(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='PENDING',
+        default=PENDING,
         help_text="Current status"
     )
     resolved_by = models.ForeignKey(
@@ -47,7 +52,7 @@ class VendorAssistance(models.Model):
     
     def save(self, *args, **kwargs):
         # Auto-set resolved_at when status changes to RESOLVED
-        if self.status == 'RESOLVED' and not self.resolved_at:
+        if self.status == self.RESOLVED and not self.resolved_at:
             self.resolved_at = timezone.now()
         super().save(*args, **kwargs)
 

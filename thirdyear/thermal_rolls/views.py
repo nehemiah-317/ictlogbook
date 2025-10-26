@@ -36,6 +36,7 @@ def thermal_roll_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'records': records,  # For compatibility with templates
         'page_obj': page_obj,
         'search_query': search_query,
         'is_admin': is_admin,
@@ -111,7 +112,9 @@ def thermal_roll_update(request, pk):
 @login_required
 def thermal_roll_delete(request, pk):
     """Delete a thermal roll record (Admin only)"""
-    if not user_is_admin(request.user):
+    is_admin = user_is_admin(request.user)
+    
+    if not is_admin:
         messages.error(request, 'You do not have permission to delete records.')
         return redirect('thermal_rolls:list')
     
@@ -124,6 +127,7 @@ def thermal_roll_delete(request, pk):
     
     context = {
         'record': record,
+        'is_admin': is_admin,
     }
-    return render(request, 'thermal_rolls/delete_confirm.html', context)
+    return render(request, 'thermal_rolls/delete.html', context)
 
