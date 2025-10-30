@@ -11,4 +11,6 @@ urlpatterns = [
 
     # Make the dashboard available at the site root
     path('', accounts_views.dashboard_view, name='dashboard'),
+    # Convenience root-level login path (so /login works)
+    path('login/', accounts_views.CustomLoginView.as_view(), name='login'),
 ]
