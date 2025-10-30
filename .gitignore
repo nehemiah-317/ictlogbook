@@ -30,6 +30,7 @@ virtualEnv/
 venv/
 .env/
 .env.*
+.env
 
 # Django stuff:
 *.log
