@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party template helpers
+    'widget_tweaks',
     # Local apps
     'accounts.apps.AccountsConfig',
     'asset_management.apps.AssetManagementConfig',
